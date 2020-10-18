@@ -8,7 +8,8 @@ const HttpError = require('./models/http-error');
 
 
 // Route references
-//....
+
+const testRoutes = require('./routes/test-routes');
 
 
 const app = express();
@@ -37,7 +38,8 @@ app.use((req, res, next) => {
 
 
 // Routes to handle requests
-//....
+app.use('/api/test', testRoutes);
+
 
 // Middleware for unsupported routes
 app.use((req, res, next) => {
