@@ -20,8 +20,7 @@ const userSchema = new Schema({
         maxLength: 20
     },
     image: {
-        type: String,
-        required: true
+        type: String
     },
     destinations: [{
         type: mongoose.Types.ObjectId,
