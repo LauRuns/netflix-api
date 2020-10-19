@@ -8,7 +8,9 @@ const HttpError = require('./models/http-error');
 
 
 // Route references
-
+const netflixRoutes = require('./routes/netflix-routes');
+const destinationRoutes = require('./routes/destination-routes');
+const userRoutes = require('./routes/users-routes');
 const testRoutes = require('./routes/test-routes');
 
 
@@ -38,8 +40,10 @@ app.use((req, res, next) => {
 
 
 // Routes to handle requests
+app.use('/api/netflix', netflixRoutes);
+app.use('/api/destinations', destinationRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/test', testRoutes);
-
 
 // Middleware for unsupported routes
 app.use((req, res, next) => {
@@ -61,7 +65,7 @@ app.use((error, req, res, next) => {
         return next(error);
     }
 
-    res.status(error.code || 500).json({
+    res.status(500).json({
         message: error.message || 'An unexpected error occurred'
     });
 
