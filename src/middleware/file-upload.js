@@ -15,7 +15,7 @@ const fileUpload = multer({
             if (isValid) {
                 error = null;
             }
-            cb(error, 'uploads/images');
+            cb(error, 'src/uploads/images');
         },
         filename: (req, file, cb) => {
             const ext = MIME_TYPE_MAP[file.mimetype];
