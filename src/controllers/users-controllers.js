@@ -49,6 +49,8 @@ const signup = async (req, res, next) => {
         return next(new HttpError('Could not create user', 500));
     }
 
+
+
     let hashedPassword;
     try {
         hashedPassword = await bcyrpt.hash(password, 12);
@@ -60,13 +62,23 @@ const signup = async (req, res, next) => {
     let createdUser;
 
     try {
-        createdUser = new User({
-            name,
-            email,
-            image: req.file.path,
-            password: hashedPassword,
-            places: []
-        });
+        if (req.file) {
+            createdUser = new User({
+                name,
+                email,
+                image: req.file.path,
+                password: hashedPassword,
+                places: []
+            });
+        }
+        if (!req.file) {
+            createdUser = new User({
+                name,
+                email,
+                password: hashedPassword,
+                places: []
+            });
+        }
 
         newUser = await createdUser.save();
 
