@@ -73,7 +73,7 @@ const getNetflixCountries = async (req, res, next) => {
 
     } catch (error) {
         return next(
-            new HttpError(error.message, error.code)
+            new HttpError('Due to an server error, no data could be loaded: ' + error.message, error.code)
         );
     };
 };
