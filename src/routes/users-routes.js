@@ -10,28 +10,31 @@ const fileUpload = require('../middleware/file-upload.js');
 router.get('/', usersController.getUsers);
 
 router.post(
-    '/signup',
-    fileUpload.single('image'),
-    [
-        check('name')
-            .not()
-            .isEmpty(),
-        check('email')
-            .normalizeEmail()
-            .isEmail(),
-        check('password').isLength({ min: 5 })
-    ],
-    usersController.signup);
+	'/signup',
+	fileUpload.single('image'),
+	[
+		check('name').not().isEmpty(),
+		check('email').normalizeEmail().isEmail(),
+		check('password').isLength({ min: 5 })
+	],
+	usersController.signup
+);
 
 router.post(
-    '/login',
-    [
-        check('email')
-            .normalizeEmail()
-            .isEmail(),
-        check('password').isLength({ min: 5 })
-    ],
-    usersController.login);
+	'/login',
+	[
+		check('email').normalizeEmail().isEmail(),
+		check('password').isLength({ min: 5 })
+	],
+	usersController.login
+);
 
+// Setting the Auth middleware; route below should only be available when authorized
+// uncomment  next line to enable authentication for routes
+// router.use(checkAuth);
+
+router.get('/:uid', usersController.getUserById);
+
+router.patch('/:uid', fileUpload.single('image'), usersController.updateUser);
 
 module.exports = router;
