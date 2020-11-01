@@ -219,28 +219,22 @@ const updateUser = async (req, res, next) => {
 	if (req.file) {
 		updatedUser.name = username;
 		updatedUser.email = email;
-		updatedUser.country = country;
+		updatedUser.country = country || updatedUser.country;
 		updatedUser.image = req.file.path;
 	}
 	if (!req.file) {
 		updatedUser.name = username;
 		updatedUser.email = email;
-		updatedUser.country = country;
+		updatedUser.country = country || updatedUser.country;
 	}
-
-	const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-	console.log(fullUrl);
-
-	const uploadUrl = req.protocol + '://' + req.get('host') + req.file.path;
-	console.log(uploadUrl);
-
-	console.log(updatedUser);
 
 	await updatedUser.save();
 
-	return res.status(200).json({
-		updatedUser: updatedUser.toObject({ getters: true })
-	});
+	setTimeout(() => {
+		return res.status(200).json({
+			updatedUser: updatedUser.toObject({ getters: true })
+		});
+	}, 4000);
 };
 
 exports.getUsers = getUsers;
