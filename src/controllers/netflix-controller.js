@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const multer = require('multer');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
@@ -12,320 +14,343 @@ const getCoordsForAddress = require('../utils/location');
 const Destination = require('../models/destination');
 const User = require('../models/user');
 
-
 let headersConfig = {
-    'x-rapidapi-host': 'unogsng.p.rapidapi.com',
-    'x-rapidapi-key': process.env.MOVIES_KEY,
-    useQueryString: true,
-}
-
+	'x-rapidapi-host': 'unogsng.p.rapidapi.com',
+	'x-rapidapi-key': process.env.MOVIES_KEY,
+	useQueryString: true
+};
 
 const getNetflixItems = async (req, res, next) => {
-    try {
-        // exclusing the -password with 'projection'
-        const users = await User.find({}, '-password');
+	try {
+		// excluding the -password with 'projection'
+		const users = await User.find({}, '-password');
 
-        if (!users) {
-            return new HttpError('Could not fetch users', 422);
-        }
+		if (!users) {
+			return new HttpError('Could not fetch users', 422);
+		}
 
-        return res.status(200).json({
-            results: users.map(user => user.toObject({ getters: true }))
-        })
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
+		return res.status(200).json({
+			results: users.map((user) => user.toObject({ getters: true }))
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
 };
-
 
 const getNetflixCountries = async (req, res, next) => {
-    try {
-        // const response = await axios({
-        //     method: 'get',
-        //     url: `https://unogsng.p.rapidapi.com/countries`,
-        //     headers: headersConfig
-        // });
+	try {
+		// const response = await axios({
+		//     method: 'get',
+		//     url: `https://unogsng.p.rapidapi.com/countries`,
+		//     headers: headersConfig
+		// });
 
-        const getData = new HttpRequest('get', 'countries', null);
-        const response = await getData.sendRequest();
+		const getData = new HttpRequest('get', 'countries', null);
+		const response = await getData.sendRequest();
 
-        const responseData = response.data.results;
-        let countryList = [];
+		const responseData = response.data.results;
+		let countryList = [];
 
-        if (!responseData || responseData.length < 1) {
-            return next(new HttpError('Could not find movie data', 422));
-        }
+		if (!responseData || responseData.length < 1) {
+			return next(new HttpError('Could not find movie data', 422));
+		}
 
-        responseData.forEach(element => {
-            const newEl = {
-                country: element.country.trim(),
-                countryId: element.id
-            }
-            countryList.push(newEl);
-        });
+		responseData.forEach((element) => {
+			const newEl = {
+				country: element.country.trim(),
+				countryId: element.id
+			};
+			countryList.push(newEl);
+		});
 
-        return res.status(200).json({
-            count: countryList.length,
-            results: countryList
-        })
-
-    } catch (error) {
-        return next(
-            new HttpError('Due to an server error, no data could be loaded: ' + error.message, error.code)
-        );
-    };
+		return res.status(200).json({
+			count: countryList.length,
+			results: countryList
+		});
+	} catch (error) {
+		return next(
+			new HttpError(
+				'Due to an server error, no data could be loaded: ' + error.message,
+				error.code
+			)
+		);
+	}
 };
 
-
 const searchNetflixDB = async (req, res, next) => {
-    try {
+	try {
+		const {
+			newdate,
+			genrelist,
+			type,
+			start_year,
+			orderby,
+			audiosubtitle_andor,
+			start_rating,
+			limit,
+			end_rating,
+			subtitle,
+			countrylist,
+			query,
+			audio,
+			country_andorunique,
+			offset,
+			end_year
+		} = req.body;
 
-        const {
-            newdate,
-            genrelist,
-            type,
-            start_year,
-            orderby,
-            audiosubtitle_andor,
-            start_rating,
-            limit,
-            end_rating,
-            subtitle,
-            countrylist,
-            query,
-            audio,
-            country_andorunique,
-            offset,
-            end_year
-        } = req.body;
+		let searchParams = {
+			newdate: newdate || null,
+			genrelist: genrelist || null,
+			type: type || null,
+			start_year: start_year || 2001,
+			orderby: orderby || 'date',
+			audiosubtitle_andor: audiosubtitle_andor || 'and',
+			start_rating: start_rating || null,
+			limit: limit || 20,
+			end_rating: end_rating || null,
+			subtitle: subtitle || 'english',
+			countrylist: countrylist || null,
+			query: query || null,
+			audio: audio || 'english',
+			country_andorunique: country_andorunique || 'unique',
+			offset: offset || 0,
+			end_year: end_year || 2020
+		};
 
-        let searchParams = {
-            newdate: newdate || null,
-            genrelist: genrelist || null,
-            type: type || null,
-            start_year: start_year || 2001,
-            orderby: orderby || 'date',
-            audiosubtitle_andor: audiosubtitle_andor || 'and',
-            start_rating: start_rating || null,
-            limit: limit || 20,
-            end_rating: end_rating || null,
-            subtitle: subtitle || 'english',
-            countrylist: countrylist || null,
-            query: query || null,
-            audio: audio || 'english',
-            country_andorunique: country_andorunique || 'unique',
-            offset: offset || 0,
-            end_year: end_year || 2020
-        }
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/search`,
+			headers: headersConfig,
+			params: searchParams
+		});
 
+		if (!response.data.results) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search queries',
+					422
+				)
+			);
+		}
 
-        const response = await axios({
-            method: 'get',
-            url: `https://unogsng.p.rapidapi.com/search`,
-            headers: headersConfig,
-            params: searchParams
-        });
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results;
 
-        if (!response.data.results) {
-            return next(new HttpError('Could not find any data matching your search queries', 422));
-        }
-
-        const dataCount = response.data.results.length;
-        let responseData = response.data.results;
-
-        return res.status(200).json({
-            count: dataCount,
-            results: responseData
-        });
-
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
-}
+		return res.status(200).json({
+			count: dataCount,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
 const searchNetflixDBForActor = async (req, res, next) => {
-    try {
-        const {
-            netflixid,
-            offset,
-            name,
-            limit
-        } = req.body;
+	try {
+		const { netflixid, offset, name, limit } = req.body;
 
-        let searchParams = {
-            netflifxid: netflixid || null,
-            offset: offset || 0,
-            name: name,
-            limit: limit || 20
-        }
+		console.log(name);
 
-        const response = await axios({
-            method: 'get',
-            url: `https://unogsng.p.rapidapi.com/people`,
-            headers: headersConfig,
-            params: searchParams
-        });
+		let searchParams = {
+			netflifxid: netflixid || null,
+			offset: offset || 0,
+			name: name,
+			limit: limit || 20
+		};
 
-        if (!response.data.results) {
-            return next(new HttpError('Could not find any data matching your search queries', 422));
-        }
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/people`,
+			headers: headersConfig,
+			params: searchParams
+		});
 
-        const dataCount = response.data.results.length;
-        let responseData = response.data.results;
+		if (!response.data.results) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search queries',
+					422
+				)
+			);
+		}
 
-        return res.status(200).json({
-            count: dataCount,
-            results: responseData
-        });
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results;
 
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
-}
+		return res.status(200).json({
+			count: dataCount,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
 const searchNetflixDBForDeletedItems = async (req, res, next) => {
-    try {
-        const {
-            limit,
-            netflixid,
-            countrylist,
-            offset,
-            date
-        } = req.body;
+	try {
+		const { limit, netflixid, countrylist, offset, date } = req.body;
 
-        let searchParams = {
-            limit: limit || 20,
-            netflifxid: netflixid || null,
-            countrylist: countrylist || null,
-            offset: offset || 0,
-            date: date,
-        }
+		let searchParams = {
+			limit: limit || 20,
+			netflifxid: netflixid || null,
+			countrylist: countrylist || null,
+			offset: offset || 0,
+			date: date
+		};
 
-        const response = await axios({
-            method: 'get',
-            url: `https://unogsng.p.rapidapi.com/titlesdel`,
-            headers: headersConfig,
-            params: searchParams
-        });
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/titlesdel`,
+			headers: headersConfig,
+			params: searchParams
+		});
 
-        console.log(searchParams);
+		console.log(searchParams);
 
-        if (!response.data.results) {
-            return next(new HttpError('Could not find any data matching your search queries', 422));
-        }
+		if (!response.data.results) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search queries',
+					422
+				)
+			);
+		}
 
-        const dataCount = response.data.results.length;
-        let responseData = response.data.results;
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results;
 
-        console.log(response.data);
+		console.log(response.data);
 
-
-        return res.status(200).json({
-            count: dataCount,
-            totalItemsDeleted: response.data.total,
-            results: responseData
-        });
-
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
-}
+		return res.status(200).json({
+			count: dataCount,
+			totalItemsDeleted: response.data.total,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
 // Get all countries associated with a particular Netflix ID
 const getCountriesForID = async (req, res, next) => {
-    try {
-        const { netflixid } = req.body;
+	try {
+		const { netflixid } = req.body;
 
-        let searchParam = {
-            netflixid: netflixid
-        }
+		let searchParam = {
+			netflixid: netflixid
+		};
 
-        const response = await axios({
-            method: 'get',
-            url: `https://unogsng.p.rapidapi.com/title`,
-            headers: headersConfig,
-            params: searchParam
-        });
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/title`,
+			headers: headersConfig,
+			params: searchParam
+		});
 
-        console.log(searchParam);
+		console.log(searchParam);
 
-        if (!response.data.results) {
-            return next(new HttpError('Could not find any data matching your search querie', 422));
-        }
+		if (!response.data.results) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search querie',
+					422
+				)
+			);
+		}
 
-        const dataCount = response.data.results.length;
-        let responseData = response.data.results;
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results;
 
-        console.log(response.data);
+		console.log(response.data);
 
-        return res.status(200).json({
-            count: dataCount,
-            totalItemsDeleted: response.data.total,
-            results: responseData
-        });
+		return res.status(200).json({
+			count: dataCount,
+			totalItemsDeleted: response.data.total,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
-}
+// Specific information for a given Netflix title using ID as search param
+const getInfoForID = async (req, res, next) => {
+	try {
+		const { netflixid, imdbid } = req.body;
+
+		console.log(netflixid);
+
+		let searchParam = {
+			netflixid: netflixid || null,
+			imdbid: imdbid || null
+		};
+
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/title`,
+			headers: headersConfig,
+			params: searchParam
+		});
+
+		if (response.data.results.length === 0) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search querie',
+					422
+				)
+			);
+		}
+
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results[0];
+
+		return res.status(200).json({
+			count: dataCount,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
 const getExpiring = async (req, res, next) => {
-    try {
+	try {
+		const { countryId, offset, limit } = req.body;
 
-        const {
-            countrylist,
-            offset,
-            limit
-        } = req.body;
+		let searchParams = {
+			countrylist: countryId,
+			offset: offset || null,
+			limit: limit || 20
+		};
 
-        let searchParams = {
-            countrylist: countrylist,
-            offset: offset || null,
-            limit: limit || null
-        }
+		const response = await axios({
+			method: 'get',
+			url: `https://unogsng.p.rapidapi.com/expiring`,
+			headers: headersConfig,
+			params: searchParams
+		});
 
+		if (!response.data.results) {
+			return next(
+				new HttpError(
+					'Could not find any data matching your search querie',
+					422
+				)
+			);
+		}
 
-        const response = await axios({
-            method: 'get',
-            url: `https://unogsng.p.rapidapi.com/expiring`,
-            headers: headersConfig,
-            params: searchParams
-        });
+		const dataCount = response.data.results.length;
+		let responseData = response.data.results;
 
-        console.log(searchParams);
-
-        if (!response.data.results) {
-            return next(new HttpError('Could not find any data matching your search querie', 422));
-        }
-
-        const dataCount = response.data.results.length;
-        let responseData = response.data.results;
-
-        return res.status(200).json({
-            count: dataCount,
-            totalItemsExpiring: response.data.total,
-            results: responseData
-        });
-
-
-    } catch (error) {
-        return next(
-            new HttpError(error.message, error.code)
-        );
-    }
-}
-
-
+		return res.status(200).json({
+			count: dataCount,
+			totalItemsExpiring: response.data.total,
+			results: responseData
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, error.code));
+	}
+};
 
 exports.getNetflixItems = getNetflixItems;
 exports.getNetflixCountries = getNetflixCountries;
@@ -333,4 +358,5 @@ exports.searchNetflixDB = searchNetflixDB;
 exports.searchNetflixDBForActor = searchNetflixDBForActor;
 exports.searchNetflixDBForDeletedItems = searchNetflixDBForDeletedItems;
 exports.getCountriesForID = getCountriesForID;
+exports.getInfoForID = getInfoForID;
 exports.getExpiring = getExpiring;
