@@ -183,7 +183,9 @@ const login = async (req, res, next) => {
 
 	// console.log('Login succesful: ' + new Date().getMinutes() + '_____', token);
 
-	return res.status(201).json({
+	// return next(new HttpError('This is a test error', 502));
+
+	return res.status(200).json({
 		userId: existingUser._id,
 		email: existingUser.email,
 		token: token
@@ -203,6 +205,7 @@ const updateUser = async (req, res, next) => {
 	}
 	const { username, email, country } = req.body;
 	const userId = req.params.uid;
+	console.log('__TRYING TO UPDATE___::', username, email, country);
 
 	let updatedUser;
 
@@ -227,14 +230,18 @@ const updateUser = async (req, res, next) => {
 		updatedUser.email = email;
 		updatedUser.country = country || updatedUser.country;
 	}
-
-	await updatedUser.save();
+	try {
+		await updatedUser.save();
+	} catch (error) {
+		console.log('___ERROR___::', error);
+		return next(new HttpError('Could not update user.', 500));
+	}
 
 	setTimeout(() => {
 		return res.status(200).json({
 			updatedUser: updatedUser.toObject({ getters: true })
 		});
-	}, 4000);
+	}, 2000);
 };
 
 exports.getUsers = getUsers;
