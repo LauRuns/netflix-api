@@ -40,11 +40,17 @@ const getUserById = async (req, res, next) => {
 			result: user.toObject({ getters: true })
 		});
 	} catch (error) {
-		return next(new HttpError(error.message, error.code));
+		console.log('Unable to fetch user____');
+		// return next(new HttpError(error.message, error.code));
+		// return next(new HttpError('Could not find user', 404));
+		return res.status(404).json({
+			message: 'Unable to find user'
+		});
 	}
 };
 
 const signup = async (req, res, next) => {
+	console.log('_____SIGN UP REQUEST RECEIVED_____');
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		console.log(errors);
@@ -56,14 +62,19 @@ const signup = async (req, res, next) => {
 		);
 	}
 
-	const { name, email, password } = req.body;
+	let parsedCountry;
+	const { name, email, password, country } = req.body;
+	parsedCountry = JSON.parse(country);
 
 	let existingUser;
 	try {
 		existingUser = await User.findOne({ email: email });
 		if (existingUser) {
 			return next(
-				new HttpError('Could not create user, email already exists.', 422)
+				new HttpError(
+					'Could not create a new user because this email address already exists.',
+					422
+				)
 			);
 		}
 	} catch (error) {
@@ -94,6 +105,7 @@ const signup = async (req, res, next) => {
 			createdUser = new User({
 				name,
 				email,
+				country: parsedCountry,
 				password: hashedPassword,
 				places: []
 			});
@@ -121,6 +133,7 @@ const signup = async (req, res, next) => {
 	}
 
 	return res.status(201).json({
+		user: newUser,
 		userId: createdUser.id,
 		email: createdUser.email,
 		token: token
@@ -133,7 +146,7 @@ const login = async (req, res, next) => {
 		console.log(errors);
 		return next(
 			new HttpError(
-				'Invalid inputs were passed, please check your input data',
+				'Authentication failed - invalid inputs were passed. Please check your input data',
 				422
 			)
 		);
@@ -149,19 +162,22 @@ const login = async (req, res, next) => {
 	}
 
 	if (!existingUser) {
-		return next(new HttpError('Invalid credentials, unable to login', 401));
+		return next(new HttpError('Authentication failed - Unable to login', 401));
 	}
 
 	let isValidPassword = false;
 	try {
 		isValidPassword = await bcyrpt.compare(password, existingUser.password);
 	} catch (error) {
-		return next(new HttpError('Could not log in - check inputs', 500));
+		return next(new HttpError('Authentication failed', 500));
 	}
 
 	if (!isValidPassword) {
 		return next(
-			new HttpError('Could not log in, invalid credentials - check inputs', 500)
+			new HttpError(
+				'Authentication failed - please check your email and password',
+				500
+			)
 		);
 	}
 
@@ -181,11 +197,8 @@ const login = async (req, res, next) => {
 		return next(new HttpError(`An error occurred: ${error.message}`, 500));
 	}
 
-	// console.log('Login succesful: ' + new Date().getMinutes() + '_____', token);
-
-	// return next(new HttpError('This is a test error', 502));
-
 	return res.status(200).json({
+		user: existingUser,
 		userId: existingUser._id,
 		email: existingUser.email,
 		token: token
@@ -195,7 +208,7 @@ const login = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		console.log(errors);
+		console.log('____UPDATE USER____error__', errors);
 		return next(
 			new HttpError(
 				'Invalid inputs were passed, please check your input data',
@@ -205,7 +218,12 @@ const updateUser = async (req, res, next) => {
 	}
 	const { username, email, country } = req.body;
 	const userId = req.params.uid;
-	console.log('__TRYING TO UPDATE___::', username, email, country);
+
+	if (username || email || country) {
+		console.log('__TRYING TO UPDATE___::', username, email, country);
+	} else if (req.file) {
+		console.log('_____SETTING NEW PROFILE IMG_____');
+	}
 
 	let updatedUser;
 
@@ -220,10 +238,11 @@ const updateUser = async (req, res, next) => {
 	}
 
 	if (req.file) {
-		updatedUser.name = username;
-		updatedUser.email = email;
-		updatedUser.country = country || updatedUser.country;
+		updatedUser.name;
+		updatedUser.email;
+		updatedUser.country;
 		updatedUser.image = req.file.path;
+		console.log('____UPDATE USER______');
 	}
 	if (!req.file) {
 		updatedUser.name = username;
@@ -233,7 +252,6 @@ const updateUser = async (req, res, next) => {
 	try {
 		await updatedUser.save();
 	} catch (error) {
-		console.log('___ERROR___::', error);
 		return next(new HttpError('Could not update user.', 500));
 	}
 

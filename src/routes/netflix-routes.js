@@ -19,6 +19,15 @@ router.post(
 router.post('/search/netflixid', netflixController.getCountriesForID);
 router.post('/search/idinfo', netflixController.getInfoForID);
 router.post('/search/expiring', netflixController.getExpiring);
+router.post(
+	'/search/countrydata',
+	netflixController.fetchNetflixDataForCountry
+);
+
+router.post('/home', netflixController.fetchLandingPageData);
+
+// router.post('/home/nld', netflixController.fetchNldHomePageData);
+// router.post('/home/other', netflixController.fetchOtherHomePageData);
 
 // router.get('/:nid', netflixController.getNetflixItemById);
 // router.get('/user/:uid', netflixController.getNetflixItemsByUserId);

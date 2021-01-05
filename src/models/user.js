@@ -23,7 +23,7 @@ const userSchema = new Schema(
 			type: String
 		},
 		country: {
-			type: String
+			type: Object
 		},
 		destinations: [
 			{

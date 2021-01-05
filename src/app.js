@@ -55,6 +55,7 @@ app.use((req, res, next) => {
 // General Error handling
 app.use((error, req, res, next) => {
 	// Remove file if a validation error occurrs during sign-up
+
 	if (req.file) {
 		fs.unlink(req.file.path, (err) => {
 			console.log('File deletion:', err);
@@ -65,7 +66,7 @@ app.use((error, req, res, next) => {
 		return next(error);
 	}
 
-	res.status(500).json({
+	return res.status(error.code || 500).json({
 		message: error.message || 'An unexpected error occurred'
 	});
 });
