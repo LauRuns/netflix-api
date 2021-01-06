@@ -105,6 +105,7 @@ const signup = async (req, res, next) => {
 			createdUser = new User({
 				name,
 				email,
+				image: 'src/uploads/images/no-profile-picture.jpg',
 				country: parsedCountry,
 				password: hashedPassword,
 				places: []
@@ -197,11 +198,24 @@ const login = async (req, res, next) => {
 		return next(new HttpError(`An error occurred: ${error.message}`, 500));
 	}
 
+	let userFavorites;
+
+	try {
+		userFavorites = await User.findById(existingUser._id).populate('favorites');
+	} catch (error) {
+		return next(
+			new HttpError('Could not find any favorites for the provided id', 404)
+		);
+	}
+
 	return res.status(200).json({
 		user: existingUser,
 		userId: existingUser._id,
 		email: existingUser.email,
-		token: token
+		token: token,
+		favorites: userFavorites.favorites.map((favorite) =>
+			favorite.toObject({ getters: true })
+		)
 	});
 };
 
