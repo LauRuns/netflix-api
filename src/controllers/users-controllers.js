@@ -156,7 +156,7 @@ const signup = async (req, res, next) => {
 					\<h3>Succesful sign up for ${name} with Jtaclogs!</h3>\
 					<div>
 						Thanks for signing up. Be aware that the app running on Jtaclogs is
-						using a third party API: unogsNg from ${pocess.env.RAPIDAPI} for fetching the Netflix content. We do not
+						using a third party API: unogsNg from ${process.env.RAPIDAPI} for fetching the Netflix content. We do not
                         control the outcome or sudden changes made by this third party.
                         <br />
                         We also would like to point out that for some countries there is no Netflix data available. Which countries this concerns is unclear at the moment. Should you not be able to find the country of your choice, then there probably is no content available for it.
