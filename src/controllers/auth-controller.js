@@ -8,7 +8,6 @@ const User = require('../models/user');
 const updatePwd = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		console.log(errors);
 		return next(
 			new HttpError(
 				'Invalid inputs were passed, please check your input data',
@@ -20,8 +19,6 @@ const updatePwd = async (req, res, next) => {
 	try {
 		const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
 		const { userId } = req.params;
-
-		console.log(email, oldPassword, newPassword, confirmNewPassword);
 
 		// Check if user-id param is same as logged in user-id send with token
 		// Auth middleware must be enabled
