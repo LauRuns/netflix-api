@@ -31,6 +31,13 @@ const userSchema = new Schema(
 				required: true,
 				ref: 'Destination'
 			}
+		],
+		favorites: [
+			{
+				type: mongoose.Types.ObjectId,
+				required: true,
+				ref: 'NetflixItem'
+			}
 		]
 	},
 	{
