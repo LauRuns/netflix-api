@@ -1,13 +1,9 @@
 const express = require('express');
 const router = express.Router();
-
 const { check } = require('express-validator');
-
+const checkAuth = require('../middleware/check-auth');
 const usersController = require('../controllers/users-controllers');
 const fileUpload = require('../middleware/file-upload.js');
-
-// should be available only for testing
-router.get('/', usersController.getUsers);
 
 router.post(
 	'/signup',
@@ -30,9 +26,8 @@ router.post(
 	usersController.login
 );
 
-// Setting the Auth middleware; route below should only be available when authorized
-// uncomment  next line to enable authentication for routes
-// router.use(checkAuth);
+// Setting the Auth middleware; routes below should only be available when authorized
+router.use(checkAuth);
 
 router.get('/:uid', usersController.getUserById);
 

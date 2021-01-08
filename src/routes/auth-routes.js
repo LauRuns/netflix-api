@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const authController = require('../controllers/auth-controller');
+const checkAuth = require('../middleware/check-auth');
 
 /* Reset route should always be avaliable */
 router.post(

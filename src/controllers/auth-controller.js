@@ -132,7 +132,7 @@ const sendResetPwdLink = async (req, res, next) => {
 		await user.save();
 		await mailer.resetPasswordMail({
 			email: user.email,
-			resetLink: `${process.env.CONNECTION_STRING_LOCAL}/reset/${rToken}` // must be jtaclogs in production
+			resetLink: `${process.env.CONNECTION_STRING}/reset/${rToken}` // must be jtaclogs in production
 		});
 	} catch (error) {
 		return next(new HttpError(error.message, error.code));

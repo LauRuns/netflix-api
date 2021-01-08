@@ -1,7 +1,7 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 let defaultClient = SibApiV3Sdk.ApiClient.instance;
 let apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.SENDINBLUE;
+apiKey.apiKey = process.env.SMTP_KEY;
 
 let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
@@ -11,7 +11,7 @@ const sendSignUpMail = async ({ name, email }) => {
 		sendSmtpEmail.subject = 'Jtaclogs signup confirmation';
 		sendSmtpEmail.to = [{ email: `${email}`, name: `${name}` }];
 		sendSmtpEmail.replyTo = {
-			email: process.env.JTACLOGS_ADMIN,
+			email: process.env.SENDER,
 			name: 'Jtaclogs admin'
 		};
 		sendSmtpEmail.htmlContent = `<html>
@@ -38,7 +38,7 @@ const sendSignUpMail = async ({ name, email }) => {
 			</html>`;
 		sendSmtpEmail.sender = {
 			name: 'Jtaclogs admin',
-			email: process.env.JTACLOGS_ADMIN
+			email: process.env.SENDER
 		};
 
 		const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
@@ -54,7 +54,7 @@ const resetPasswordMail = async ({ email, resetLink }) => {
 		sendSmtpEmail.subject = 'Jtaclogs password reset';
 		sendSmtpEmail.to = [{ email: `${email}` }];
 		sendSmtpEmail.replyTo = {
-			email: process.env.JTACLOGS_ADMIN,
+			email: process.env.SENDER,
 			name: 'Jtaclogs admin'
 		};
 		sendSmtpEmail.htmlContent = `<html>
@@ -71,7 +71,7 @@ const resetPasswordMail = async ({ email, resetLink }) => {
     </html>`;
 		sendSmtpEmail.sender = {
 			name: 'Jtaclogs admin',
-			email: process.env.JTACLOGS_ADMIN
+			email: process.env.SENDER
 		};
 
 		const response = await apiInstance.sendTransacEmail(sendSmtpEmail);

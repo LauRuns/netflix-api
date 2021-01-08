@@ -6,8 +6,6 @@ let headersConfig = {
 	useQueryString: true
 };
 
-// const source = axios.CancelToken.source();
-
 class HttpRequest {
 	constructor(method = 'get', urlEndpoint, searchParams = null, cancelToken) {
 		this.method = method;

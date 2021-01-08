@@ -8,8 +8,6 @@ const HttpError = require('./models/http-error');
 
 // Route references
 const authRoutes = require('./routes/auth-routes');
-const netflixRoutes = require('./routes/netflix-routes');
-const destinationRoutes = require('./routes/destination-routes');
 const favoritesRoutes = require('./routes/favorites-routes');
 const userRoutes = require('./routes/users-routes');
 
@@ -42,8 +40,6 @@ app.use((req, res, next) => {
 
 // Routes to handle requests
 app.use('/api/auth', authRoutes);
-app.use('/api/netflix', netflixRoutes);
-app.use('/api/destinations', destinationRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/users', userRoutes);
 

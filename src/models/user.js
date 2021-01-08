@@ -31,14 +31,6 @@ const userSchema = new Schema(
 		resetTokenExpiration: {
 			type: Date
 		},
-
-		destinations: [
-			{
-				type: mongoose.Types.ObjectId,
-				required: true,
-				ref: 'Destination'
-			}
-		],
 		favorites: [
 			{
 				type: mongoose.Types.ObjectId,
