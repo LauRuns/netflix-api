@@ -25,6 +25,13 @@ const userSchema = new Schema(
 		country: {
 			type: Object
 		},
+		resetToken: {
+			type: String
+		},
+		resetTokenExpiration: {
+			type: Date
+		},
+
 		destinations: [
 			{
 				type: mongoose.Types.ObjectId,
