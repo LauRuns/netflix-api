@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const fs = require('fs');
@@ -12,7 +13,13 @@ const userRoutes = require('./routes/users-routes');
 
 const app = express();
 
-app.use(morgan('dev'));
+const accessLogStream = fs.createWriteStream(
+	path.join(__dirname, 'access.log'),
+	{ flags: 'a' }
+);
+
+app.use(helmet());
+app.use(morgan('combined', { stream: accessLogStream }));
 app.use(bodyParser.json());
 
 /* Returns static files - requested images */
@@ -49,7 +56,10 @@ app.use((req, res, next) => {
 
 /* General Error handling */
 app.use((error, req, res, next) => {
-	/* Remove file if a validation error occurrs during sign-up */
+	/*
+    Remove file if a validation error occurrs during sign-up
+    Only applicable if a user image is set on sign up
+    */
 	if (req.file) {
 		fs.unlink(req.file.path, (err) => {
 			console.log('File deletion:', err);

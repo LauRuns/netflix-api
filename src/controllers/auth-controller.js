@@ -203,6 +203,13 @@ const resetPwd = async (req, res, next) => {
 	}
 
 	if (resetUser.resetTokenExpiration < Date.now()) {
+		try {
+			resetUser.resetToken = undefined;
+			resetUser.resetTokenExpiration = undefined;
+			await resetUser.save();
+		} catch (error) {
+			return next(new HttpError(error.message, error.code));
+		}
 		return next(
 			new HttpError(
 				`You're reset link is no longer valid. Please request another reset link`,
