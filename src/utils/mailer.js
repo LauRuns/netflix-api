@@ -1,4 +1,5 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+
 let defaultClient = SibApiV3Sdk.ApiClient.instance;
 let apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.SMTP_KEY;
@@ -6,6 +7,7 @@ apiKey.apiKey = process.env.SMTP_KEY;
 let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
+/* Send the user a sign up confirmation mail */
 const sendSignUpMail = async ({ name, email }) => {
 	try {
 		sendSmtpEmail.subject = 'Jtaclogs signup confirmation';
@@ -48,8 +50,10 @@ const sendSignUpMail = async ({ name, email }) => {
 	}
 };
 
+/* Emails the user a link for resetting the password  */
 const resetPasswordMail = async ({ email, resetLink }) => {
-	console.log('mailing....');
+	const time = new Date().getTime() + 900000; // adds 15 min
+	const date = new Date(time);
 	try {
 		sendSmtpEmail.subject = 'Jtaclogs password reset';
 		sendSmtpEmail.to = [{ email: `${email}` }];
@@ -64,6 +68,7 @@ const resetPasswordMail = async ({ email, resetLink }) => {
             <br />
             <div>
                 <p>Click this <a href="${resetLink}">link</a> to reset your password.</p>
+                <p>This link is valid for 15 min untill: ${date.toString()}.</p>
             </div>
             \
         </body>

@@ -1,34 +1,16 @@
 const bcyrpt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-
 const mailer = require('../utils/mailer');
-
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
-
 const JWT_KEY = process.env.JWT_KEY;
 
-const getUsers = async (req, res, next) => {
-	try {
-		// exclusing the -password with 'projection'
-		const users = await User.find({}, '-password');
-
-		if (!users) {
-			return new HttpError('Could not fetch users', 422);
-		}
-
-		return res.status(200).json({
-			results: users.map((user) => user.toObject({ getters: true }))
-		});
-	} catch (error) {
-		return next(new HttpError(error.message, error.code));
-	}
-};
-
+/* Returns a single user based on the ID passed in as a paramater */
 const getUserById = async (req, res, next) => {
 	try {
 		const userId = req.params.uid;
+		/* Exclude the hashed password form the result - password */
 		const user = await User.findById({ _id: userId }, '-password');
 
 		if (!user) {
@@ -39,15 +21,16 @@ const getUserById = async (req, res, next) => {
 			result: user.toObject({ getters: true })
 		});
 	} catch (error) {
-		console.log('Unable to fetch user____');
-		// return next(new HttpError(error.message, error.code));
-		// return next(new HttpError('Could not find user', 404));
 		return res.status(404).json({
 			message: 'Unable to find user'
 		});
 	}
 };
 
+/*
+Returns a new signed up user
+User has provided the credentials in the signup form
+*/
 const signup = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -64,6 +47,7 @@ const signup = async (req, res, next) => {
 	const { name, email, password, country } = req.body;
 	parsedCountry = JSON.parse(country);
 
+	/* Check if there already is a user with the provided email address in the body */
 	let existingUser;
 	try {
 		existingUser = await User.findOne({ email: email });
@@ -79,6 +63,7 @@ const signup = async (req, res, next) => {
 		return next(new HttpError('Could not create user', 500));
 	}
 
+	/* Hash the password provided by the new user */
 	let hashedPassword;
 	try {
 		hashedPassword = await bcyrpt.hash(password, 12);
@@ -115,6 +100,7 @@ const signup = async (req, res, next) => {
 		return next(new HttpError(error.message, error.code));
 	}
 
+	/* Create a JWT which is send is returned to the frontend */
 	let token;
 	try {
 		token = jwt.sign(
@@ -131,6 +117,7 @@ const signup = async (req, res, next) => {
 		return next(new HttpError(`An error occurred: ${error.message}`, 500));
 	}
 
+	/* If a token was created then a sign up confirmation email will be send and the newly created user is returned to the frontend */
 	if (token) {
 		try {
 			await mailer.sendSignUpMail({ name: name, email: email });
@@ -138,6 +125,7 @@ const signup = async (req, res, next) => {
 			console.log('Error sending email______>', error);
 		}
 
+		/* Returns the token and newly created user */
 		return res.status(201).json({
 			user: newUser,
 			userId: createdUser.id,
@@ -147,6 +135,10 @@ const signup = async (req, res, next) => {
 	}
 };
 
+/*
+Login functionality
+Checks if user exists and matches the provided password the password found in the database
+*/
 const login = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -162,6 +154,7 @@ const login = async (req, res, next) => {
 	const { email, password } = req.body;
 	let existingUser;
 
+	/* Fetch user from the database using the provided email */
 	try {
 		existingUser = await User.findOne({ email: email });
 	} catch (error) {
@@ -172,6 +165,7 @@ const login = async (req, res, next) => {
 		return next(new HttpError('Authentication failed - Unable to login', 401));
 	}
 
+	/* Compare passwords */
 	let isValidPassword = false;
 	try {
 		isValidPassword = await bcyrpt.compare(password, existingUser.password);
@@ -188,6 +182,7 @@ const login = async (req, res, next) => {
 		);
 	}
 
+	/* Create a JWT */
 	let token;
 	try {
 		token = jwt.sign(
@@ -204,8 +199,8 @@ const login = async (req, res, next) => {
 		return next(new HttpError(`An error occurred: ${error.message}`, 500));
 	}
 
+	/* Fetch all favorites for the user and return these as well - in the frontend both user and favorites will be set in context */
 	let userFavorites;
-
 	try {
 		userFavorites = await User.findById(existingUser._id).populate('favorites');
 	} catch (error) {
@@ -214,6 +209,7 @@ const login = async (req, res, next) => {
 		);
 	}
 
+	/* Return user/token/favorites */
 	return res.status(200).json({
 		user: existingUser,
 		userId: existingUser._id,
@@ -225,10 +221,12 @@ const login = async (req, res, next) => {
 	});
 };
 
+/*
+Update a users name, email or image
+*/
 const updateUser = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		console.log('____UPDATE USER____error__', errors);
 		return next(
 			new HttpError(
 				'Invalid inputs were passed, please check your input data',
@@ -239,14 +237,8 @@ const updateUser = async (req, res, next) => {
 	const { username, email, country } = req.body;
 	const userId = req.params.uid;
 
-	if (username || email || country) {
-		console.log('__TRYING TO UPDATE___::', username, email, country);
-	} else if (req.file) {
-		console.log('_____SETTING NEW PROFILE IMG_____');
-	}
-
+	/* Fetch the user from the database */
 	let updatedUser;
-
 	try {
 		updatedUser = await User.findById(userId);
 	} catch (error) {
@@ -257,32 +249,32 @@ const updateUser = async (req, res, next) => {
 		return next(new HttpError('Could not find a user for that id.', 404));
 	}
 
+	/* Checks if a file is present on the request */
 	if (req.file) {
 		updatedUser.name;
 		updatedUser.email;
 		updatedUser.country;
 		updatedUser.image = req.file.path;
-		console.log('____UPDATE USER______');
 	}
 	if (!req.file) {
 		updatedUser.name = username;
 		updatedUser.email = email;
 		updatedUser.country = country || updatedUser.country;
 	}
+
+	/* Save the updated user to the database */
 	try {
 		await updatedUser.save();
 	} catch (error) {
 		return next(new HttpError('Could not update user.', 500));
 	}
 
-	setTimeout(() => {
-		return res.status(200).json({
-			updatedUser: updatedUser.toObject({ getters: true })
-		});
-	}, 2000);
+	/* Return the updated user */
+	return res.status(200).json({
+		updatedUser: updatedUser.toObject({ getters: true })
+	});
 };
 
-exports.getUsers = getUsers;
 exports.getUserById = getUserById;
 exports.signup = signup;
 exports.login = login;

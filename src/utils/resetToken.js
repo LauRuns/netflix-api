@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 
+/* Generates a reset token which is set in the user object using the crypto method from Nodejs */
 const generateResetToken = async () => {
 	const buffer = await new Promise((resolve, reject) => {
 		crypto.randomBytes(32, function (err, buffer) {

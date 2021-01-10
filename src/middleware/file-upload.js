@@ -6,6 +6,9 @@ const MIME_TYPE_MAP = {
 	'image/jpg': 'jpg'
 };
 
+/*
+Extracts an image file from the request and stores it in the uploads/images folder
+*/
 const fileUpload = multer({
 	limit: 500000,
 	storage: multer.diskStorage({

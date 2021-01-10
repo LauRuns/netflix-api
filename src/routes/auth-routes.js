@@ -11,15 +11,18 @@ router.post(
 	authController.sendResetPwdLink
 );
 
+/* Posting a new password iot reset the users password */
 router.post(
 	'/reset/pwd/:token',
 	check('newPassword').isLength({ min: 5 }),
 	authController.resetPwd
 );
-// Setting the Auth middleware; route below should only be available when authorized
-// uncomment  next line to enable authentication for routes
+
+/* Setting the Auth middleware; route below should only be available when authorized */
+// uncomment  next line to enable of disabled authentication for routes below it
 router.use(checkAuth);
 
+/* Route for updating the users credentials like name/email/avatar-image */
 router.patch(
 	'/update/:uid',
 	[check('email').normalizeEmail().isEmail()],

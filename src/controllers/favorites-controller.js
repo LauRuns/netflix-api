@@ -1,11 +1,13 @@
 const multer = require('multer');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-
 const HttpError = require('../models/http-error');
 const NetflixItem = require('../models/netflix-item');
 const User = require('../models/user');
 
+/*
+Returns a list [] of favorite Netflix items from the user based on the user ID that is passed in as a parameter
+*/
 const getFavoritesByUserId = async (req, res, next) => {
 	const userId = req.params.uid;
 	let userFavorites;
@@ -17,12 +19,13 @@ const getFavoritesByUserId = async (req, res, next) => {
 			new HttpError('Could not find any favorites for the provided id', 404)
 		);
 	}
-	console.log('fetching user favorites_______<<<');
 	if (!userFavorites || userFavorites.length === 0) {
 		return next(
 			new HttpError('Could not find a favorites for the provided user id.', 404)
 		);
 	}
+
+	/* Return the results to the user */
 	return res.status(200).json({
 		result: userFavorites.favorites.map((favorite) =>
 			favorite.toObject({ getters: true })
@@ -30,6 +33,7 @@ const getFavoritesByUserId = async (req, res, next) => {
 	});
 };
 
+/* Adds a favorite to the favorites list of a user */
 const addFavorite = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -55,14 +59,19 @@ const addFavorite = async (req, res, next) => {
 		creator: req.userData.userId
 	});
 
+	/* Fetch user based on ID from parameter */
 	try {
 		user = await User.findById(req.userData.userId);
 	} catch (error) {
 		return next(error);
 	}
 
+	/*
+    Create a rollback scenario for MongoDB useing Mongoose
+    Save the new favorite to the user
+    If an error occurs trying to perform this action, then the action is 'rolled back'
+    */
 	try {
-		// rollback scenario for monogoose
 		const session = await mongoose.startSession();
 		session.startTransaction();
 		await createdFavorite.save({ sessions: session });
@@ -73,11 +82,13 @@ const addFavorite = async (req, res, next) => {
 		return next(new HttpError(error.message, error.code));
 	}
 
+	/* Return the results to the user */
 	return res.status(201).json({
 		favorite: createdFavorite
 	});
 };
 
+/* Deletes one of the favorite items based on its ID passed in as a parameter */
 const deleteFavoriteItem = async (req, res, next) => {
 	const favoriteId = req.params.fid;
 	let favorite;
@@ -96,6 +107,11 @@ const deleteFavoriteItem = async (req, res, next) => {
 		return next(new HttpError('You are not allowed to delete this item', 401));
 	}
 
+	/*
+    Create a rollback scenario for MongoDB useing Mongoose
+    Delete a favorite from the user
+    If an error occurs trying to perform this action, then the action is 'rolled back'
+    */
 	try {
 		const session = await mongoose.startSession();
 		session.startTransaction();
@@ -107,6 +123,7 @@ const deleteFavoriteItem = async (req, res, next) => {
 		return next(new HttpError(error.message, error.code));
 	}
 
+	/* Return the results to the user */
 	return res.status(200).json({
 		message: 'Favorite was deleted',
 		result: {
