@@ -66,8 +66,8 @@ Should you not wish to use a mailing solution to inform users, then the followin
 - `SENDER`
 
 You will need to select a port on which the API can be reached by the frontend applications
-![Set env variables]('./src/assets/env_variables_netflix_api.gif')
-<img src="./src/assets/env_variables_netflix_api.gif" width="auto" height="200" />
+
+<img src="./src/assets/env_variables_netflix_api.gif" alt='Set variables' />
 
 After setting the environment variables, start the API by running the command:
 
