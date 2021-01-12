@@ -78,19 +78,9 @@ npm run start
 ```
 
 The API should now be up and running. A confirmation should be presented in the console:
-
-```
-[nodemon] 2.0.5
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: js,mjs,json
-[nodemon] starting `node netflix-server.js`
-Mongo DB connected
-Server is listening on port 8082!
-```
+<img src="./src/assets/api_ruin_start.gif" alt='Run start' />
 
 Start one of the frontend applications mentioned below the title section of this Readme and login or sign up
-<img src="./src/assets/netflix_api_demo.gif" alt='Set variables' />
 
 Open the access.log file that is automatily created in the `/src` folder next to the `app.js` file.
 A login or sign up attempt should now be logged.
