@@ -1,11 +1,11 @@
 # Nodejs API
 
-This API is to be used with the `NETFLIX-APP` and/or the `RN-NETFLIX` project. Together with this API they are part of school/study project and should be used together.
-Both these React and React Native projects use this API for handling userdata and authentication.
+This API is to be used with the `NETFLIX-APP` and/or the `RN-NETFLIX` project. Together with this API they are part of a school/study project and should be used together.
+Both the React and React Native project use this API for handling userdata and authentication.
 
 ## This is a study project
 
-This is just a project for my study. Therefore teachers/instructors will receive a seperate file containing all API-keys and will not need got through the section: Set-up guide.
+This is just a project for my study. Therefore teachers/instructors will receive a seperate file containing all API-keys and will not need to go through the section: Set-up guide.
 
 ## Prerequisites
 
@@ -35,6 +35,8 @@ After installation run the `node -v` command again and verify that Node is insta
 This API uses MongoDB for persisting data. Throughout the API the `Mongoose` module is used (its a dependency) for interacting with the database.
 You will need to create a MongoDB atlas account which can be done at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
 
+A SaaS platform is used for sending emails to users. Should the user wish to this as well, then creating an account with services like [Sendgrid](https://sendgrid.com/solutions/email-api/) or [Sendinblue](https://www.sendinblue.com/) is required. If no API key from a service as mentiond is provided, then sending transactional emails to the user will not be possible. This means that sending emails for resetting the users password will also not be passible.
+
 ## Technologies used
 
 - Both React applications mentioned in the intro use the API for authenticating users. Modules [bcrypt](https://www.npmjs.com/package/bcrypt) and [jwt](https://www.npmjs.com/package/jsonwebtoken) are used in the authentication flow.
@@ -54,14 +56,18 @@ npm install
 
 All the project dependencies will be installed and a `node_modules` folder is created.
 
-#### Environment variables
+### Environment variables
 
 Create a `.env` file in the root folder and enter all environment variables as listed in the `.env-example` which you find in the root folder as well.
-Should you not wish to use a mailing solution to inform users, then the following options can be removed from the .env file:
+Should you not wish to use a mailing solution to inform users, then the following options can be removed from the `.env` file:
 
 - `REMOTE_CONNECTION_STRING`
 - `SMTP_KEY`
 - `SENDER`
+
+You will need to select a port on which the API can be reached by the frontend applications
+![Set env variables]('./src/assets/env_variables_netflix_api.gif')
+<img src="./src/assets/env_variables_netflix_api.gif" width="auto" height="200" />
 
 After setting the environment variables, start the API by running the command:
 
@@ -82,6 +88,8 @@ Server is listening on port 8082!
 ```
 
 ## Demo
+
+## Deploying to a live server
 
 ## Authors and acknowledgment
 
