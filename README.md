@@ -83,7 +83,14 @@ The API should now be up and running. A confirmation should be presented in the 
 Start one of the frontend applications mentioned below the title section of this Readme and login or sign up
 
 Open the access.log file that is automatily created in the `/src` folder next to the `app.js` file.
-A login or sign up attempt should now be logged.
+A login or sign up attempt should now be logged:
+
+```
+::1 - - [12/Jan/2021:08:17:23 +0000] "OPTIONS /api/users/login HTTP/1.1" 200 19 "http://localhost:3000/"
+::1 - - [12/Jan/2021:08:17:24 +0000] "POST /api/users/login HTTP/1.1" 200 2550 "http://localhost:3000/"
+```
+
+! The `localhost:3000` is the port on which the frontend is running. It calls the API on `locahost:8082`
 
 ## Project status
 
