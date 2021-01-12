@@ -69,6 +69,8 @@ You will need to select a port on which the API can be reached by the frontend a
 
 <img src="./src/assets/env_variables_netflix_api.gif" alt='Set variables' />
 
+## Demo
+
 After setting the environment variables, start the API by running the command:
 
 ```
@@ -87,13 +89,15 @@ Mongo DB connected
 Server is listening on port 8082!
 ```
 
-## Demo
+Start one of the frontend applications mentioned below the title section of this Readme and login or sign up
+<img src="./src/assets/netflix_api_demo.gif" alt='Set variables' />
 
-## Deploying to a live server
-
-## Authors and acknowledgment
+Open the access.log file that is automatily created in the `/src` folder next to the `app.js` file.
+A login or sign up attempt should now be logged.
 
 ## Project status
+
+The API is ready to be used in a production environment. However, further improvements will be made and pushed to this repo.
 
 ## License
 
