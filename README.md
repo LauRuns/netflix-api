@@ -1,6 +1,6 @@
 # Nodejs API
 
-This API is to be used with the `NETFLIX-APP` and/or the `RN-NETFLIX` project. Together with this API they are part of a school/study project and should be used together.
+This API is to be used with the `NETFLIX-APP` and/or the `RN-NETFLIX` project which you will find as public projects on this Github. Together with this API they are part of a school/study project and should be used together.
 Both the React and React Native project use this API for handling userdata and authentication.
 
 ## This is a study project
