@@ -67,7 +67,7 @@ Should you not wish to use a mailing solution to inform users, then the followin
 
 You will need to select a port on which the API can be reached by the frontend applications
 
-<img src="./src/assets/env_variables_netflix_api.gif" alt='Set variables' />
+<img src="https://github.com/LauRuns/readme-gifs/blob/main/api/env_variables_netflix_api.gif?raw=true" alt='Set variables' />
 
 ## Demo
 
@@ -78,7 +78,7 @@ npm run start
 ```
 
 The API should now be up and running. A confirmation should be presented in the console:
-<img src="./src/assets/api_ruin_start.gif" alt='Run start' />
+<img src="https://github.com/LauRuns/readme-gifs/blob/main/api/api_ruin_start.gif?raw=true" alt='Run start' />
 
 Start one of the frontend applications mentioned below the title section of this Readme and login or sign up
 
