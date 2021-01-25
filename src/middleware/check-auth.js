@@ -30,6 +30,6 @@ module.exports = (req, res, next) => {
 		req.userData = { email: decodedToken.email, userId: decodedToken.userId };
 		next();
 	} catch (error) {
-		return next(new HttpError('Authentication failed:' + error.message, 401));
+		return next(new HttpError('Authentication failed: ' + error.message, 401));
 	}
 };
