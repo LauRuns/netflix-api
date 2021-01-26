@@ -14,7 +14,6 @@ Checks if user exists and matches the provided password the password found in th
 const login = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		console.log(errors);
 		return next(
 			new HttpError(
 				'Authentication failed - invalid inputs were passed. Please check your input data',

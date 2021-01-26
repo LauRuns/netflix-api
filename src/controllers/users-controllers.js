@@ -39,8 +39,6 @@ const updateUser = async (req, res, next) => {
 	const { username, email, country } = req.body;
 	const userId = req.params.uid;
 
-	console.log('Cookies___updateUser___: ', req.cookies);
-
 	/* Fetch the user from the database */
 	let updatedUser;
 	try {
