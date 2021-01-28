@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 const HttpError = require('./models/http-error');
@@ -21,6 +22,7 @@ const accessLogStream = fs.createWriteStream(
 app.use(helmet());
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 /* Returns static files - requested images */
 app.use(
@@ -30,7 +32,15 @@ app.use(
 
 /* Handle CORS - prior to passing it to the routes */
 app.use((req, res, next) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
+	let uri = req.headers.origin;
+	if (
+		uri === 'http://localhost:3000' ||
+		uri === 'http://localhost:8082' ||
+		uri === 'https://jtaclogs.nl'
+	) {
+		res.setHeader('Access-Control-Allow-Origin', `${uri}`);
+	}
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
 	res.setHeader(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization'

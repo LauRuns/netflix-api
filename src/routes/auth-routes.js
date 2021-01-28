@@ -1,8 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const authController = require('../controllers/auth-controller');
 const checkAuth = require('../middleware/check-auth');
+const authController = require('../controllers/auth-controller');
+const fileUpload = require('../middleware/file-upload.js');
+
+router.post(
+	'/signup',
+	fileUpload.single('image'),
+	[
+		check('name').not().isEmpty(),
+		check('email').normalizeEmail().isEmail(),
+		check('password').isLength({ min: 5 }),
+		check('country').not().isEmpty()
+	],
+	authController.signup
+);
+
+router.post(
+	'/login',
+	[
+		check('email').normalizeEmail().isEmail(),
+		check('password').isLength({ min: 5 })
+	],
+	authController.login
+);
 
 /* Reset route should always be avaliable */
 router.post(
