@@ -87,6 +87,12 @@ const login = async (req, res, next) => {
 		secure: false,
 		sameSite: true
 	});
+	res.cookie('_rfrid', token, {
+		maxAge: 60 * 60 * 1000, // 1 hour
+		httpOnly: true,
+		secure: false,
+		sameSite: true
+	});
 	res.status(200);
 	res.json({
 		user: existingUser,
@@ -193,7 +199,12 @@ const signup = async (req, res, next) => {
 			secure: false,
 			sameSite: true
 		});
-
+		res.cookie('_rfrid', token, {
+			maxAge: 60 * 60 * 1000, // 1 hour
+			httpOnly: true,
+			secure: false,
+			sameSite: true
+		});
 		res.status(201);
 		res.json({
 			user: newUser,
