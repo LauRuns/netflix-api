@@ -27,6 +27,7 @@ build/
 tmp/
 temp/
 
+requests.rest
 
 # Editor
 .idea/
