@@ -53,15 +53,12 @@ const updateUser = async (req, res, next) => {
 
 	/* Checks if a file is present on the request */
 	if (req.file) {
-		updatedUser.name;
-		updatedUser.email;
-		updatedUser.country;
 		updatedUser.image = req.file.path;
 	}
 	if (!req.file) {
 		updatedUser.name = username;
 		updatedUser.email = email;
-		updatedUser.country = country || updatedUser.country;
+		updatedUser.country = country ? country : updatedUser.country;
 	}
 
 	/* Save the updated user to the database */
