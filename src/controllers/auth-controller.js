@@ -80,6 +80,15 @@ const login = async (req, res, next) => {
 		);
 	}
 
+	const userDto = {
+		id: existingUser._id,
+		name: existingUser.name,
+		email: existingUser.email,
+		country: existingUser.country,
+		updatedAt: existingUser.updatedAt,
+		image: existingUser.image
+	};
+
 	/* Return user/token/favorites */
 	res.cookie('accessToken', token, {
 		maxAge: 60 * 60 * 1000, // 1 hour
@@ -95,7 +104,7 @@ const login = async (req, res, next) => {
 	});
 	res.status(200);
 	res.json({
-		user: existingUser,
+		user: userDto,
 		userId: existingUser._id,
 		email: existingUser.email,
 		token: token,
