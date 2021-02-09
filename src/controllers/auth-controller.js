@@ -81,6 +81,7 @@ const login = async (req, res, next) => {
 	}
 
 	const userDto = {
+		id: existingUser._id,
 		name: existingUser.name,
 		email: existingUser.email,
 		country: existingUser.country,
