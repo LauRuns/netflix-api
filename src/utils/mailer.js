@@ -31,7 +31,7 @@ const sendSignUpMail = async ({ name, email }) => {
 						We hope you enjoy our app and its content.
 						<br />
 						<br />
-						Greetings from the Jatclogs team! (...which is actually just one
+						Greetings from the Jtaclogs team! (...which is actually just one
 						person)
 					</div>
 					\
