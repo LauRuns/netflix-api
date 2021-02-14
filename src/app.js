@@ -32,7 +32,10 @@ app.use(
 
 /* Handle CORS - prior to passing it to the routes */
 app.use((req, res, next) => {
-	/* Set Access-Control-Allow-Origin only for specific domains by uncommenting below and comment line 44 */
+	/*
+	Set Access-Control-Allow-Origin only for specific domains by uncommenting below and comment line 47
+	By doing so, only domains listed below are accessible, make sure you have added your domain!
+	*/
 	// let uri = req.headers.origin;
 	// if (
 	// 	uri === 'http://localhost:3000' ||
@@ -41,7 +44,7 @@ app.use((req, res, next) => {
 	// ) {
 	// 	res.setHeader('Access-Control-Allow-Origin', `${uri}`);
 	// }
-	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Origin', `${req.headers.origin}`);
 	res.setHeader('Access-Control-Allow-Credentials', 'true');
 	res.setHeader(
 		'Access-Control-Allow-Headers',
