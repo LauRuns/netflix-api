@@ -32,14 +32,16 @@ app.use(
 
 /* Handle CORS - prior to passing it to the routes */
 app.use((req, res, next) => {
-	let uri = req.headers.origin;
-	if (
-		uri === 'http://localhost:3000' ||
-		uri === 'http://localhost:8082' ||
-		uri === 'https://jtaclogs.nl'
-	) {
-		res.setHeader('Access-Control-Allow-Origin', `${uri}`);
-	}
+	/* Set Access-Control-Allow-Origin only for specific domains by uncommenting below and comment line 44 */
+	// let uri = req.headers.origin;
+	// if (
+	// 	uri === 'http://localhost:3000' ||
+	// 	uri === 'http://localhost:8082' ||
+	// 	uri === 'https://jtaclogs.nl'
+	// ) {
+	// 	res.setHeader('Access-Control-Allow-Origin', `${uri}`);
+	// }
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Credentials', 'true');
 	res.setHeader(
 		'Access-Control-Allow-Headers',
