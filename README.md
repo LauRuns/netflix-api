@@ -9,17 +9,17 @@ This is just a project for my study. Therefore teachers/instructors will receive
 
 # Contents
 
-- [Prerequisites](##prerequisites)
-  - [How to check if Node is installed?](##how-to-check-if-Node-is-installed?)
+- [Prerequisites](#prerequisites)
+  - [How to check if Node is installed?](#how-to-check-if-Node-is-installed?)
 - [Set-up guide](#set-up-guide)
 - [Technologies used](#technologies-used)
 - [Installation](#installation)
 - [Environment variables](#environment-variables)
 - [Demo](#demo)
 - [Available REST endpoints](#available-rest-endpoints)
-  - [User](##user-endpoints)
-  - [Auth](##auth-endpoints)
-  - [Favorites](##favorites-endpoints)
+  - [User](#user-endpoints)
+  - [Auth](#auth-endpoints)
+  - [Favorites](#favorites-endpoints)
 - [License](#license)
 
 # Prerequisites
